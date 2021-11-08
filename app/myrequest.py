@@ -18,7 +18,7 @@ class MyHttpClient:
         s.verify = False
         # : 公共的请求头设置
         s.headers = {
-            "key": "yiQn1StKCKchvq6SNveMgPcML29ZX5rI8HDs1N1OFW3j95hdKcVPlsXEbth3prxN",
+            "apiKey": "yiQn1StKCKchvq6SNveMgPcML29ZX5rI8HDs1N1OFW3j95hdKcVPlsXEbth3prxN",
             "secret": "sqjSGvUgdlRfddkl7Vz1sDQPwk8TrpJbdctE8God7s2DqMtJyENBRBsxEK5Y3GIE",
         }
 
@@ -26,15 +26,19 @@ class MyHttpClient:
         self.s = s
         self.timeout = timeout
 
-    def get(self, url, query_dict):
+    def get(self, url, query_dict=None):
         """GET
 
         :param url:
         :param query_dict: 一般GET的参数都是放在URL查询参数里面
         :return:
         """
-
-        return self.s.get(url=self.baseurl+url, params=query_dict)
+        res = self.s.get(url=self.baseurl+url, params=query_dict)
+        if res.status_code == 200:
+            return res.text
+        else:
+            print(res.text)
+            return None
 
     def post(self, url, form_data=None, body_dict=None):
         """POST
@@ -44,10 +48,12 @@ class MyHttpClient:
         :param body_dict: 有时候POST的参数是放在请求体中(这时候 Content-Type: application/json )
         :return:
         """
+        form = self.s.post(url=self.baseurl+url, data=form_data)
+        body = self.post(url=self.baseurl+url, json=body_dict)
         if form_data:
-            return self.s.post(url=self.baseurl+url, data=form_data)
+            return form.text
         if body_dict:
-            return self.post(url=self.baseurl+url, json=body_dict)
+            return body
 
     def __del__(self):
         """当实例被销毁时,释放掉session所持有的连接

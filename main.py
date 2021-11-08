@@ -1,6 +1,7 @@
 
 import threading
 import time
+from app.BinanceAPI import BinanceAPI
 
 
 def main(self):
@@ -14,6 +15,7 @@ def main(self):
 def thread():
     localtime = time.asctime(time.localtime(time.time()))
     print("本地时间为 :", localtime)
+    BinanceAPI()
     return
 
 
