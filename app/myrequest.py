@@ -1,11 +1,11 @@
 import requests
 from requests.adapters import HTTPAdapter
+import json
 
 
 class MyHttpClient:
-    baseurl = "https://api.binance.com"
 
-    def __init__(self, timeout=8):
+    def __init__(self, timeout=4):
         """
         :param timeout: 每个请求的超时时间
         """
@@ -26,21 +26,22 @@ class MyHttpClient:
         self.s = s
         self.timeout = timeout
 
-    def get(self, url, query_dict=None):
+    def get(self, url, query_dict=None, baseurl="https://api.binance.com"):
         """GET
 
         :param url:
         :param query_dict: 一般GET的参数都是放在URL查询参数里面
         :return:
         """
-        res = self.s.get(url=self.baseurl+url, params=query_dict)
+        url = baseurl+url
+        res = self.s.get(url=url, params=query_dict)
         if res.status_code == 200:
-            return res.text
+            return json.loads(res.text)
         else:
-            print(res.text)
+            print(res)
             return None
 
-    def post(self, url, form_data=None, body_dict=None):
+    def post(self, url, form_data=None, body_dict=None, baseurl="https://api.binance.com"):
         """POST
 
         :param url:
@@ -48,10 +49,12 @@ class MyHttpClient:
         :param body_dict: 有时候POST的参数是放在请求体中(这时候 Content-Type: application/json )
         :return:
         """
-        form = self.s.post(url=self.baseurl+url, data=form_data)
-        body = self.post(url=self.baseurl+url, json=body_dict)
+        url = baseurl+url
+
+        form = self.s.post(url, data=form_data)
+        body = self.post(url, json=body_dict)
         if form_data:
-            return form.text
+            return json.loads(form.text)
         if body_dict:
             return body
 
