@@ -6,6 +6,8 @@ from app.myApp import App
 import urllib3
 urllib3.disable_warnings()
 
+# 版本1.0
+
 
 def main(self):
     print('服务开始运行！长时间没反应请连接vpn')
