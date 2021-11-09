@@ -1,5 +1,5 @@
 
-from pandas.core.arrays import integer
+
 from .myrequest import MyHttpClient
 from .MyExcepcation import MyError
 

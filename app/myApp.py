@@ -3,7 +3,7 @@ import time
 from pandas import DataFrame
 from config.strategy import myCout
 import pandas as pd
-
+from .dingding import Ding
 
 class App(object):
 
@@ -33,7 +33,10 @@ class App(object):
         # self.df.to_csv('my1.csv')
         a = self.df.loc[self.df.index[-1]]
         print(a['buy'])
-        print(a['sell'])
+        if a['buy'] == True :
+         Ding().send_message("操作 当前买入 fil 价格 "+str(a["close"]))
+        if a['sell'] == True :
+         Ding().send_message("操作 当前卖出 fil 价格"+str(a["close"]))
         return True
 
     # [
