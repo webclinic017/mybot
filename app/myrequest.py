@@ -1,6 +1,7 @@
 import requests
 from requests.adapters import HTTPAdapter
 import json
+from .MyExcepcation import MyError
 
 
 class MyHttpClient:
@@ -38,7 +39,6 @@ class MyHttpClient:
         if res.status_code == 200:
             return json.loads(res.text)
         else:
-            print(res)
             return None
 
     def post(self, url, form_data=None, body_dict=None, baseurl="https://api.binance.com"):
