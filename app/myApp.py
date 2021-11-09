@@ -43,7 +43,7 @@ class App(object):
         a = self.df.loc[self.df.index[-1]]
         print(a['buy'])
         if a['buy'] == True :
-         Ding().send_message("操作 当前卖出 fil 价格:"+str(a["close"])+" 时间:"+self.time(a["close_time"]))
+         Ding().send_message("操作 当前买入 fil 价格:"+str(a["close"])+" 时间:"+self.time(a["close_time"]))
         if a['sell'] == True :
          Ding().send_message("操作 当前卖出 fil 价格:"+str(a["close"])+" 时间:"+self.time(a["close_time"]))
         return True
