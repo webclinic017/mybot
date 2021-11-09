@@ -4,6 +4,8 @@ from pandas import DataFrame
 from config.strategy import myCout
 import pandas as pd
 from .dingding import Ding
+import time
+import datetime
 
 class App(object):
 
@@ -27,6 +29,13 @@ class App(object):
             print('核对时间成功')
         return cha < 10
 
+    def time(self,timestamp):
+ 
+        # 转换成localtime
+        time_local = time.localtime(int(timestamp/1000))
+        # 转换成新的时间格式(精确到秒)
+        dt = time.strftime("%Y-%m-%d %H:%M:%S", time_local)
+        return str(dt)
     # 监听买入卖出函数
     def is_buy_sell(self) -> bool:
         data = self.df.max()
@@ -34,9 +43,9 @@ class App(object):
         a = self.df.loc[self.df.index[-1]]
         print(a['buy'])
         if a['buy'] == True :
-         Ding().send_message("操作 当前买入 fil 价格 "+str(a["close"]))
+         Ding().send_message("操作 当前卖出 fil 价格:"+str(a["close"])+" 时间:"+self.time(a["close_time"]))
         if a['sell'] == True :
-         Ding().send_message("操作 当前卖出 fil 价格"+str(a["close"]))
+         Ding().send_message("操作 当前卖出 fil 价格:"+str(a["close"])+" 时间:"+self.time(a["close_time"]))
         return True
 
     # [
