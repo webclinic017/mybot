@@ -30,7 +30,7 @@ class App(object):
     # 监听买入卖出函数
     def is_buy_sell(self) -> bool:
         data = self.df.max()
-        self.df.to_csv('my1.csv')
+        # self.df.to_csv('my1.csv')
         a = self.df.loc[self.df.index[-1]]
         print(a['buy'])
         print(a['sell'])

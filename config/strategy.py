@@ -19,7 +19,7 @@ class myCout(strategy):
         dataframe['macdhist'] = macd['macdhist']
 
         # print(dataframe.style)
-
+        
         # a
         return dataframe
 
