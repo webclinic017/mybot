@@ -6,7 +6,7 @@ from app.myApp import App
 import urllib3
 urllib3.disable_warnings()
 
-# 版本1.0
+# 版本1.2
 
 
 def main(self):
