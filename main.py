@@ -3,19 +3,22 @@
 import time
 from app.BinanceAPI import BinanceAPI
 from app.myApp import App
+import urllib3
+urllib3.disable_warnings()
 
 
 def main(self):
     print('服务开始运行！长时间没反应请连接vpn')
     # 校验服务器时间
-    App().checktime()
+    bot = App()
+    bot.checktime()
     while True:
+        bot.runBot()
         time.sleep(1)
         thread()
 
 
 def thread():
-    BinanceAPI()
     return
 
 

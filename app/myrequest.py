@@ -35,6 +35,7 @@ class MyHttpClient:
         :return:
         """
         url = baseurl+url
+
         res = self.s.get(url=url, params=query_dict)
         if res.status_code == 200:
             return json.loads(res.text)

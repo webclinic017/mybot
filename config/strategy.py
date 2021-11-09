@@ -4,17 +4,11 @@ from pandas import DataFrame
 import talib.abstract as ta
 import pandas as pd
 
-from .qtpylib import indicators as qtpylib
+from app.qtpylib import indicators as qtpylib
+from app.strategy import myCout as strategy
 
 
-class myCout(object):
-
-    def __init__(self, kline=[]):
-        dataframe = self.populate_indicators(kline)
-        dataframe = self.populate_buy_trend(dataframe)
-        dataframe = self.populate_sell_trend(dataframe)
-        # dataframe.to_csv('my.csv')
-        self.dataframe = dataframe
+class myCout(strategy):
 
     def populate_indicators(self, dataframe: DataFrame):
         dataframe['adx'] = ta.ADX(dataframe)
@@ -24,10 +18,19 @@ class myCout(object):
         dataframe['macdsignal'] = macd['macdsignal']
         dataframe['macdhist'] = macd['macdhist']
 
+        # print(dataframe.style)
+
         # a
         return dataframe
 
     def populate_buy_trend(self, dataframe: DataFrame) -> DataFrame:
+        dataframe.loc[
+            (
+
+                (qtpylib.crossed_above(dataframe['macdsignal'], 0)) &
+                (dataframe['volume'] > 0)
+            ),
+            'buy'] = True
         return dataframe
 
     def populate_sell_trend(self, dataframe: DataFrame) -> DataFrame:
@@ -38,4 +41,11 @@ class myCout(object):
         :return: DataFrame with buy列
         """
 
+        dataframe.loc[
+            (
+                # (qtpylib.crossed_below(dataframe['macd'] ,0)) &
+                (qtpylib.crossed_below(dataframe['macdsignal'], 0)) &
+                (dataframe['volume'] > 0)
+            ),
+            'sell'] = True
         return dataframe

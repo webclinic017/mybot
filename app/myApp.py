@@ -1,17 +1,21 @@
 from .BinanceAPI import BinanceAPI as http
 import time
 from pandas import DataFrame
-from .strategy import myCout
+from config.strategy import myCout
+import pandas as pd
 
 
 class App(object):
 
     def __init__(self, *args):
-        self.kline = http().getKline()
-        myCout(kline=self.filerDataFrame()
-               )
 
         return
+
+    def runBot(self):
+        self.kline = http().getKline()
+        # 获取dataFrame对象
+        self.df = myCout(kline=self.filerDataFrame()).dataframe
+        self.is_buy_sell()
 
     def checktime(self):
         servertime = int(http().getSeverTime()/1000)
@@ -22,6 +26,15 @@ class App(object):
         else:
             print('核对时间成功')
         return cha < 10
+
+    # 监听买入卖出函数
+    def is_buy_sell(self) -> bool:
+        data = self.df.max()
+        self.df.to_csv('my1.csv')
+        a = self.df.loc[self.df.index[-1]]
+        print(a['buy'])
+        print(a['sell'])
+        return True
 
     # [
     #   [
@@ -47,5 +60,5 @@ class App(object):
                            "start_time", "open", "high", "low", "close", "volume",
                            "close_time", "total_vol", "order_nums", "buy_vol", "buy_tatol", "d"
                        ])
-        # df.astype(d)
+
         return df
