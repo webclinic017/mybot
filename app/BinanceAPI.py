@@ -15,11 +15,16 @@ class BinanceAPI(object):
         self.http = MyHttpClient()
         return
 
+    def get_user_data(self):
+        res = self.http.get(url='/fapi/v2/account ', baseurl=self.furl)
+        return res
+    # 获取服务器时间
+
     def getSeverTime(self):
         res = self.http.get(url='/fapi/v1/time', baseurl=self.furl)
         return res['serverTime']
 
-    #  合约kline
+    #  获取kline
     def getKline(self):
         res = self.http.get(url="/fapi/v1/klines",
                             baseurl=self.furl, query_dict={"symbol": self.pair, "interval": self.interval})
