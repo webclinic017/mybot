@@ -46,9 +46,6 @@ class App(object):
 
     # 监听买入卖出函数
     def is_buy_sell(self):
-        # print(self.df[(self.df.buy == 1)])
-
-        # getbuy_or_selcsv(df=df, name="my")
         df = self.df.loc[self.df.index[-1]]
 
         if df['buy'] == 1:
