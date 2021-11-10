@@ -2,13 +2,14 @@
 
 from .myrequest import MyHttpClient
 from .MyExcepcation import MyError
+from my_config import config
 
 
 class BinanceAPI(object):
     baseurl = "https://api.binance.com"
     furl = "https://fapi.binance.com"
-    pair = "ETHUSDT"
-    interval = "5m"
+    pair = config.pair
+    interval = config.interval
 
     def __init__(self, *args):
         self.http = MyHttpClient()
