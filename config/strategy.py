@@ -5,7 +5,7 @@ import talib.abstract as ta
 import pandas as pd
 
 from app.qtpylib import indicators as qtpylib
-from app.strategy import myCout as strategy
+from app.strategy_interface import myCout as strategy
 
 
 class myCout(strategy):
