@@ -7,7 +7,7 @@ from .MyExcepcation import MyError
 class BinanceAPI(object):
     baseurl = "https://api.binance.com"
     furl = "https://fapi.binance.com"
-    pair = "FILUSDT"
+    pair = "ETHUSDT"
     interval = "5m"
 
     def __init__(self, *args):

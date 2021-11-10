@@ -6,6 +6,9 @@ import pandas as pd
 from .dingding import Ding
 import time
 import datetime
+from .utils import getbuy_or_selcsv
+import numpy as np
+
 
 class App(object):
 
@@ -18,6 +21,10 @@ class App(object):
         # 获取dataFrame对象
         self.df = myCout(kline=self.filerDataFrame()).dataframe
         self.is_buy_sell()
+        getbuy_or_selcsv(
+            df=self.df[(self.df.buy == 1)], name="buy")
+        getbuy_or_selcsv(
+            df=self.df[(self.df.sell == 1)], name="sell")
 
     def checktime(self):
         servertime = int(http().getSeverTime()/1000)
@@ -29,24 +36,27 @@ class App(object):
             print('核对时间成功')
         return cha < 10
 
-    def time(self,timestamp):
- 
+    def time(self, timestamp):
+
         # 转换成localtime
         time_local = time.localtime(int(timestamp/1000))
         # 转换成新的时间格式(精确到秒)
         dt = time.strftime("%Y-%m-%d %H:%M:%S", time_local)
         return str(dt)
+
     # 监听买入卖出函数
-    def is_buy_sell(self) -> bool:
-        data = self.df.max()
-        # self.df.to_csv('my1.csv')
-        a = self.df.loc[self.df.index[-1]]
-        print(a['buy'])
-        if a['buy'] == True :
-         Ding().send_message("操作 当前买入 fil 价格:"+str(a["close"])+" 时间:"+self.time(a["close_time"]))
-        if a['sell'] == True :
-         Ding().send_message("操作 当前卖出 fil 价格:"+str(a["close"])+" 时间:"+self.time(a["close_time"]))
-        return True
+    def is_buy_sell(self):
+        # print(self.df[(self.df.buy == 1)])
+
+        # getbuy_or_selcsv(df=df, name="my")
+        df = self.df.loc[self.df.index[-1]]
+
+        if df['buy'] == 1:
+            Ding().send_message("操作 当前买入 fil 价格:" +
+                                str(df["close"])+" 时间:"+self.time(df["close_time"]))
+        if df['sell'] == 1:
+            Ding().send_message("操作 当前卖出 fil 价格:" +
+                                str(df["close"])+" 时间:"+self.time(df["close_time"]))
 
     # [
     #   [
@@ -66,11 +76,13 @@ class App(object):
     # ]
 
     def filerDataFrame(self):
+
         df = DataFrame(data=self.kline,
                        dtype=float,
                        columns=[
                            "start_time", "open", "high", "low", "close", "volume",
                            "close_time", "total_vol", "order_nums", "buy_vol", "buy_tatol", "d"
                        ])
-
+        df[['start_time', 'close_time']] = df[[
+            'start_time', 'close_time']].astype(np.int_)
         return df

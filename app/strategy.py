@@ -6,6 +6,8 @@ import pandas as pd
 
 from .qtpylib import indicators as qtpylib
 
+import numpy as np
+
 
 class myCout(object):
 
@@ -14,6 +16,8 @@ class myCout(object):
         dataframe = self.populate_buy_trend(dataframe)
         dataframe = self.populate_sell_trend(dataframe)
         # dataframe.to_csv('my.csv')
+        # dataframe[['buy', 'sell']] = dataframe[[
+        #     'buy', 'sell']].astype(np.bool_)
         self.dataframe = dataframe
 
     def populate_indicators(self, dataframe: DataFrame):

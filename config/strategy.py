@@ -12,6 +12,14 @@ class myCout(strategy):
 
     def populate_indicators(self, dataframe: DataFrame):
         dataframe['adx'] = ta.ADX(dataframe)
+
+        # # Plus Directional Indicator / Movement
+        dataframe['plus_dm'] = ta.PLUS_DM(dataframe)
+        dataframe['plus_di'] = ta.PLUS_DI(dataframe)
+
+        # # Minus Directional Indicator / Movement
+        dataframe['minus_dm'] = ta.MINUS_DM(dataframe)
+        dataframe['minus_di'] = ta.MINUS_DI(dataframe)
         # MACD
         macd = ta.MACD(dataframe)
         dataframe['macd'] = macd['macd']
@@ -19,7 +27,7 @@ class myCout(strategy):
         dataframe['macdhist'] = macd['macdhist']
 
         # print(dataframe.style)
-        
+
         # a
         return dataframe
 
@@ -27,10 +35,11 @@ class myCout(strategy):
         dataframe.loc[
             (
 
-                (qtpylib.crossed_above(dataframe['macdsignal'], 0)) &
-                (dataframe['volume'] > 0)
+                (qtpylib.crossed_above(dataframe['plus_dm'], dataframe['minus_dm'])) &
+                (dataframe['volume'] > 0) &
+                (dataframe['adx'] > 20)
             ),
-            'buy'] = True
+            'buy'] = 1
         return dataframe
 
     def populate_sell_trend(self, dataframe: DataFrame) -> DataFrame:
@@ -43,9 +52,9 @@ class myCout(strategy):
 
         dataframe.loc[
             (
-                # (qtpylib.crossed_below(dataframe['macd'] ,0)) &
-                (qtpylib.crossed_below(dataframe['macdsignal'], 0)) &
-                (dataframe['volume'] > 0)
+                (qtpylib.crossed_above(dataframe['minus_dm'], dataframe['plus_dm'])) &
+                (dataframe['volume'] > 0) |
+                (dataframe['adx'] > 60)
             ),
-            'sell'] = True
+            'sell'] = 1
         return dataframe
