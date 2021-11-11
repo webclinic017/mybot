@@ -8,6 +8,7 @@ import time
 import datetime
 from .utils import getbuy_or_selcsv
 import numpy as np
+from .utils import format_time
 
 
 class App(object):
@@ -16,18 +17,24 @@ class App(object):
 
         return
 
-    def runBot(self):
-        self.kline = http().getKline()
+    # 设在data数据
+    def set_data_frame(self):
+        self.kline = http().get_kline()
         # 获取dataFrame对象
         self.df = myCout(kline=self.filerDataFrame()).dataframe
-        self.is_buy_sell()
+        return
+
+    def runBot(self):
+        self.set_data_frame()
+        # self.is_buy_sell()
         getbuy_or_selcsv(
             df=self.df[(self.df.buy == 1)], name="buy")
         getbuy_or_selcsv(
             df=self.df[(self.df.sell == 1)], name="sell")
 
+    # 核对服务器时间
     def checktime(self):
-        servertime = int(http().getSeverTime()/1000)
+        servertime = int(http().get_server_time()/1000)
         localtime = int(time.time())
         cha = servertime - localtime
         if cha > 10:
@@ -36,24 +43,16 @@ class App(object):
             print('核对时间成功')
         return cha < 10
 
-    def time(self, timestamp):
-
-        # 转换成localtime
-        time_local = time.localtime(int(timestamp/1000))
-        # 转换成新的时间格式(精确到秒)
-        dt = time.strftime("%Y-%m-%d %H:%M:%S", time_local)
-        return str(dt)
-
     # 监听买入卖出函数
     def is_buy_sell(self):
         df = self.df.loc[self.df.index[-1]]
 
         if df['buy'] == 1:
             Ding().send_message("操作 当前买入 fil 价格:" +
-                                str(df["close"])+" 时间:"+self.time(df["close_time"]))
+                                str(df["close"])+" 时间:"+format_time(df["close_time"]))
         if df['sell'] == 1:
             Ding().send_message("操作 当前卖出 fil 价格:" +
-                                str(df["close"])+" 时间:"+self.time(df["close_time"]))
+                                str(df["close"])+" 时间:"+format_time(df["close_time"]))
 
     # [
     #   [
@@ -71,9 +70,8 @@ class App(object):
     #     "0"                 // 请忽略该参数
     #   ]
     # ]
-
+    # DataFrame 转化成
     def filerDataFrame(self):
-
         df = DataFrame(data=self.kline,
                        dtype=float,
                        columns=[

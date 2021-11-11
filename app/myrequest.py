@@ -1,68 +1,90 @@
-import requests
-from requests.adapters import HTTPAdapter
+from urllib.parse import urlencode
 import json
-from .MyExcepcation import MyError
+import requests
+import hashlib
+import time
+import hmac
 
 
-class MyHttpClient:
+""" This is a very simple script working on Binance API
 
-    def __init__(self, timeout=4):
-        """
-        :param timeout: 每个请求的超时时间
-        """
-        s = requests.Session()
-        # : 在session实例上挂载Adapter实例, 目的: 请求异常时,自动重试
-        s.mount('http://', HTTPAdapter(max_retries=3))
-        s.mount('https://', HTTPAdapter(max_retries=3))
+- work with USER_DATA endpoint with no third party dependency
+- work with testnet
 
-        # : 设置为False, 主要是HTTPS时会报错, 为了安全也可以设置为True
-        s.verify = False
-        # : 公共的请求头设置
-        s.headers = {
-            "apiKey": "yiQn1StKCKchvq6SNveMgPcML29ZX5rI8HDs1N1OFW3j95hdKcVPlsXEbth3prxN",
-            "secret": "sqjSGvUgdlRfddkl7Vz1sDQPwk8TrpJbdctE8God7s2DqMtJyENBRBsxEK5Y3GIE",
-        }
+Provide the API key and secret, and it's ready to go
 
-        # : 挂载到self上面
-        self.s = s
-        self.timeout = timeout
+Because USER_DATA endpoints require signature:
+- call `send_signed_request` for USER_DATA endpoints
+- call `send_public_request` for public endpoints
 
-    def get(self, url, query_dict=None, baseurl="https://api.binance.com"):
-        """GET
+```python
 
-        :param url:
-        :param query_dict: 一般GET的参数都是放在URL查询参数里面
-        :return:
-        """
-        url = baseurl+url
+python futures.py
 
-        res = self.s.get(url=url, params=query_dict)
-        if res.status_code == 200:
-            return json.loads(res.text)
-        else:
-            return None
+```
 
-    def post(self, url, form_data=None, body_dict=None, baseurl="https://api.binance.com"):
-        """POST
+"""
 
-        :param url:
-        :param form_data: 有时候POST的参数是放在表单参数中
-        :param body_dict: 有时候POST的参数是放在请求体中(这时候 Content-Type: application/json )
-        :return:
-        """
-        url = baseurl+url
+KEY = "yiQn1StKCKchvq6SNveMgPcML29ZX5rI8HDs1N1OFW3j95hdKcVPlsXEbth3prxN"
+SECRET = 'sqjSGvUgdlRfddkl7Vz1sDQPwk8TrpJbdctE8God7s2DqMtJyENBRBsxEK5Y3GIE'
+# BASE_URL = 'https://fapi.binance.com' # production base url
+BASE_URL = 'https://testnet.binancefuture.com'  # testnet base url
 
-        form = self.s.post(url, data=form_data)
-        body = self.post(url, json=body_dict)
-        if form_data:
-            return json.loads(form.text)
-        if body_dict:
-            return body
+''' ======  begin of functions, you don't need to touch ====== '''
 
-    def __del__(self):
-        """当实例被销毁时,释放掉session所持有的连接
 
-        :return:
-        """
-        if self.s:
-            self.s.close()
+def hashing(query_string):
+    return hmac.new(SECRET.encode('utf-8'), query_string.encode('utf-8'), hashlib.sha256).hexdigest()
+
+
+def get_timestamp():
+    return int(time.time() * 1000)
+
+
+def dispatch_request(http_method):
+    session = requests.Session()
+    session.headers.update({
+        'Content-Type': 'application/json;charset=utf-8',
+        'X-MBX-APIKEY': KEY
+    })
+    return {
+        'GET': session.get,
+        'DELETE': session.delete,
+        'PUT': session.put,
+        'POST': session.post,
+    }.get(http_method, 'GET')
+
+# used for sending request requires the signature
+
+
+def send_signed_request(http_method, url_path, payload={}, baseurl=BASE_URL):
+    query_string = urlencode(payload)
+    # replace single quote to double quote
+    query_string = query_string.replace('%27', '%22')
+    if query_string:
+        query_string = "{}&timestamp={}".format(query_string, get_timestamp())
+    else:
+        query_string = 'timestamp={}'.format(get_timestamp())
+
+    url = baseurl + url_path + '?' + query_string + \
+        '&signature=' + hashing(query_string)
+    print("{} {}".format(http_method, url))
+    params = {'url': url, 'params': {}}
+    response = dispatch_request(http_method)(**params)
+    return response.json()
+
+# used for sending public data request
+
+
+def send_public_request(url_path, payload={}, baseurl=BASE_URL):
+    query_string = urlencode(payload, True)
+    url = baseurl + url_path
+    if query_string:
+        url = url + '?' + query_string
+    print("{}".format(url))
+    response = dispatch_request('GET')(url=url)
+    return response.json()
+
+
+''' ======  end of functions ====== '''
+# https://github.com/binance/binance-signature-examples/blob/master/python/futures.py

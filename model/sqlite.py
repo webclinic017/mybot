@@ -1,2 +1,8 @@
-from sqlalchemy import create_engine
-engine = create_engine('sqlite:///relative/path/to/foo.db', echo=True)
+from peewee import SqliteDatabase, Model
+db = SqliteDatabase('mysqlite.db')
+
+
+class BaseModel(Model):
+
+    class Meta:
+        database = db
