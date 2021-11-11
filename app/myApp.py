@@ -38,7 +38,7 @@ class App(object):
     def get_csv(self, df: DataFrame):
         # 最新的订单
         new_order = df[(self.df.buy == 1)]
-        Order().set(side="BUY", start_time=df.start_time)
+        Order().add_order(side="BUY", start_time=df.start_time)
         getbuy_or_selcsv(
             df=df[(self.df.buy == 1)], name="buy")
         getbuy_or_selcsv(
