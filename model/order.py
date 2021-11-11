@@ -87,7 +87,7 @@ class Order(BaseModel):
     # 币种
     pair = CharField()
 
-    def set(self, side, state=0, start_time=''):
+    def add_order(self, side, state=0, start_time=''):
         self.create(side=side, state=state,
                     pair=config.pair, start_time=start_time)
         return
