@@ -14,7 +14,7 @@ class BinanceAPI(object):
 
     def __init__(self, *args):
 
-        server_res = self.get_server_time()
+        # server_res = self.get_server_time()
         # res = self.order()
         return
 
@@ -46,7 +46,6 @@ class BinanceAPI(object):
         return res
 
     # 下单
-
     def order(self):
         res = send_signed_request("POST", '/fapi/v1/order/test',
                                   payload={

@@ -1,11 +1,11 @@
 
 
+from model.order import Order
 import time
 from app.BinanceAPI import BinanceAPI
 from app.myApp import App
 import urllib3
 urllib3.disable_warnings()
-
 # 版本1.2
 
 
@@ -25,4 +25,5 @@ def thread():
 
 
 if __name__ == '__main__':
+    Order.create_table()
     main(None)

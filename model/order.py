@@ -72,21 +72,29 @@ from .sqlite import db, BaseModel
 # 不支持 quantity 参数
 # 自带只平仓属性，不支持reduceOnly参数
 # 双开模式下,LONG方向上不支持BUY; SHORT 方向上不支持SELL
+import datetime
+from my_config import config
+
 
 class Order(BaseModel):
     id = AutoField(primary_key=True)
 
-    start_time = BigIntegerField(unique=True)
+    start_time = CharField()
     # SELL 卖 BUY 买
     side = CharField()
-    # 未成交 成交
+    # 未成交 成交  0   1    2
     state = IntegerField()
     # 币种
     pair = CharField()
+
+    def set(self, side, state=0, start_time=''):
+        self.create(side=side, state=state,
+                    pair=config.pair, start_time=start_time)
+        return
 
     class Meta:
         order_by = "id"
         db_table = 'order'
 
 
-Order.create_table()
+# Order.create_table()
