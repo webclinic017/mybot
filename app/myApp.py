@@ -6,12 +6,17 @@ import pandas as pd
 from .dingding import Ding
 import time
 import datetime
-from .utils import getbuy_or_selcsv
+from .utils import getbuy_or_selcsv, format_time
 import numpy as np
-from .utils import format_time
+from model.order import Order
+# 模拟运行 真实运行 回测
+
+# state 状态 0 开始 1查询数据 2
 
 
 class App(object):
+
+    state = ""
 
     def __init__(self, *args):
 
@@ -22,15 +27,23 @@ class App(object):
         self.kline = http().get_kline()
         # 获取dataFrame对象
         self.df = myCout(kline=self.filerDataFrame()).dataframe
+        self.get_csv(self.df)
         return
 
     def runBot(self):
         self.set_data_frame()
         # self.is_buy_sell()
+
+    # 获取csv
+    def get_csv(self, df: DataFrame):
+        # 最新的订单
+        new_order = df[(self.df.buy == 1)]
+        Order().set(side="BUY", start_time=df.start_time)
         getbuy_or_selcsv(
-            df=self.df[(self.df.buy == 1)], name="buy")
+            df=df[(self.df.buy == 1)], name="buy")
         getbuy_or_selcsv(
-            df=self.df[(self.df.sell == 1)], name="sell")
+            df=df[(self.df.sell == 1)], name="sell")
+    # 获取
 
     # 核对服务器时间
     def checktime(self):
@@ -46,8 +59,8 @@ class App(object):
     # 监听买入卖出函数
     def is_buy_sell(self):
         df = self.df.loc[self.df.index[-1]]
-
         if df['buy'] == 1:
+
             Ding().send_message("操作 当前买入 fil 价格:" +
                                 str(df["close"])+" 时间:"+format_time(df["close_time"]))
         if df['sell'] == 1:
