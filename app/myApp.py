@@ -22,30 +22,37 @@ class App(object):
 
         return
 
+    def runBot(self):
+        self.set_data_frame()
+
+    def testbacking(self, df):
+        df = self.set_data_frame()
+
+        return
+
+    def run_dev(self):
+        return
+
+    def run_pro(self):
+        return
     # 设在data数据
+
     def set_data_frame(self):
         self.kline = http().get_kline()
         # 获取dataFrame对象
-        self.df = myCout(kline=self.filerDataFrame()).dataframe
-        self.get_csv(self.df)
-        return
-
-    def runBot(self):
-        self.set_data_frame()
-        # self.is_buy_sell()
+        df = myCout(kline=self.filerDataFrame()).dataframe
+        return df
 
     # 获取csv
     def get_csv(self, df: DataFrame):
         # 最新的订单
-        new_order = df[(self.df.buy == 1)]
-        Order().add_order(side="BUY", start_time=df.start_time)
         getbuy_or_selcsv(
             df=df[(self.df.buy == 1)], name="buy")
         getbuy_or_selcsv(
             df=df[(self.df.sell == 1)], name="sell")
-    # 获取
 
     # 核对服务器时间
+
     def checktime(self):
         servertime = int(http().get_server_time()/1000)
         localtime = int(time.time())

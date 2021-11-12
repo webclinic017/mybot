@@ -1,5 +1,3 @@
-from peewee import *
-from .sqlite import db, BaseModel
 
 # "feeTier": 0,  // 手续费等级
 # "canTrade": true,  // 是否可以交易
@@ -17,16 +15,15 @@ from .sqlite import db, BaseModel
 # "totalCrossUnPnl": "0.00000000",    // 全仓持仓未实现盈亏总额, 仅计算usdt资产
 # "availableBalance": "23.72469206",       // 可用余额, 仅计算usdt资产
 # "maxWithdrawAmount": "23.72469206"     // 最大可转出余额, 仅计算usdt资产
+from my_config import config
 
 
-class account(BaseModel):
-    id = AutoField(primary_key=True)
-    #  账户总余额
-    totalWalletBalance = FloatField()
+class account(object):
+
+    #  账户总余额 模拟环境不默认为 0
+    totalWalletBalance = 0.0
     # 可用余额
-    availableBalance = FloatField()
-    #
-    feeTier = IntegerField()
+    availableBalance = 0.0
 
 
 class Meta:

@@ -2,5 +2,7 @@
   "pair": "ETHUSDT",
   "account_ratio": 0.99,
   "defualt_account": 1000,
-  "interval": "5m"
+  "interval": "5m",
+  "is_run": false,
+  "balance": 0
 }
