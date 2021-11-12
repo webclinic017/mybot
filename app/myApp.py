@@ -6,9 +6,10 @@ import pandas as pd
 from .dingding import Ding
 import time
 import datetime
-from .utils import getbuy_or_selcsv, format_time
+from .utils import format_time
 import numpy as np
 from model.order import Order
+from robot.testbacking import Backing
 # 模拟运行 真实运行 回测
 
 # state 状态 0 开始 1查询数据 2
@@ -19,15 +20,18 @@ class App(object):
     state = ""
 
     def __init__(self, *args):
+        self.df = self.set_data_frame()
 
         return
 
     def runBot(self):
         self.set_data_frame()
 
-    def testbacking(self, df):
-        df = self.set_data_frame()
-
+    def testbacking(self):
+        df = self.df
+        df = df[(self.df.buy == 1) | (self.df.sell == 1)]
+        Backing(df=df)
+        # df
         return
 
     def run_dev(self):
@@ -42,14 +46,6 @@ class App(object):
         # 获取dataFrame对象
         df = myCout(kline=self.filerDataFrame()).dataframe
         return df
-
-    # 获取csv
-    def get_csv(self, df: DataFrame):
-        # 最新的订单
-        getbuy_or_selcsv(
-            df=df[(self.df.buy == 1)], name="buy")
-        getbuy_or_selcsv(
-            df=df[(self.df.sell == 1)], name="sell")
 
     # 核对服务器时间
 

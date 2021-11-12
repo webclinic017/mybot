@@ -24,8 +24,10 @@ for index, s in enumerate(sys.argv):
         type = s
 
 
+print('服务开始运行！长时间没反应请连接vpn')
+
+
 def main(self):
-    print('服务开始运行！长时间没反应请连接vpn')
     # 校验服务器时间
     bot.checktime()
     while True:
@@ -39,7 +41,3 @@ elif type == "dev":
     bot.run_dev()
 elif type == "pro":
     bot.run_pro()
-
-if __name__ == '__main__':
-    Order.create_table()
-    main(None)
